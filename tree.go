@@ -24,7 +24,7 @@ type inode interface {
 	setIndentLevel(i int)
 	addChild(n inode)
 	noNewline() bool
-	resolve(scope map[string]interface{}, buf *bytes.Buffer, curIndent string, indent string, autoclose bool)
+	resolve(scope map[interface{}]interface{}, buf *bytes.Buffer, curIndent string, indent string, autoclose bool)
 	setParent(n inode)
 	nil() bool
 }
@@ -36,7 +36,7 @@ type icodenode interface {
 	setIndentLevel(i int)
 	addChild(n inode)
 	noNewline() bool
-	resolve(scope map[string]interface{}, buf *bytes.Buffer, curIndent string, indent string, autoclose bool)
+	resolve(scope map[interface{}]interface{}, buf *bytes.Buffer, curIndent string, indent string, autoclose bool)
 	setParent(n inode)
 	nil() bool
 }
@@ -61,7 +61,7 @@ func newTree() (output *tree) {
 	return
 }
 
-func (self res) resolve(scope map[string]interface{}) (output string) {
+func (self res) resolve(scope map[interface{}]interface{}) (output string) {
 	output = self.value
 	if self.needsResolution {
 		curr := self.resolveValue(scope)
@@ -90,7 +90,7 @@ func (self res) resolve(scope map[string]interface{}) (output string) {
 	return
 }
 
-func (self res) resolveValue(scope map[string]interface{}) (value reflect.Value) {
+func (self res) resolveValue(scope map[interface{}]interface{}) (value reflect.Value) {
 	keyPath := strings.Split(self.value, ".")
 	curr := reflect.ValueOf(scope[keyPath[0]])
 	for _, key := range keyPath[1:] {
@@ -109,7 +109,7 @@ func (self res) resolveValue(scope map[string]interface{}) (value reflect.Value)
 	return
 }
 
-func (self tree) resolve(scope map[string]interface{}, indent string, autoclose bool) (output string) {
+func (self tree) resolve(scope map[interface{}]interface{}, indent string, autoclose bool) (output string) {
 	//treeLen := self.nodes.Len()
 	treeLen := len(self.nodes)
 	buf := bytes.NewBuffer(make([]byte, 0))
@@ -124,7 +124,7 @@ func (self tree) resolve(scope map[string]interface{}, indent string, autoclose 
 	return
 }
 
-func (self node) resolve(scope map[string]interface{}, buf *bytes.Buffer, curIndent string, indent string, autoclose bool) {
+func (self node) resolve(scope map[interface{}]interface{}, buf *bytes.Buffer, curIndent string, indent string, autoclose bool) {
 	remainder := self._remainder.resolve(scope)
 	//if self._attrs.Len() > 0 && len(remainder) > 0 {
 	if len(self._attrs) > 0 && len(remainder) > 0 {
@@ -165,7 +165,7 @@ func (self node) resolve(scope map[string]interface{}, buf *bytes.Buffer, curInd
 	}
 }
 
-func (self node) outputChildren(scope map[string]interface{}, buf *bytes.Buffer, curIndent string, indent string, autoclose bool) {
+func (self node) outputChildren(scope map[interface{}]interface{}, buf *bytes.Buffer, curIndent string, indent string, autoclose bool) {
 	ind := curIndent + indent
 	if self._noNewline {
 		ind = curIndent
@@ -208,7 +208,7 @@ func contains(value string, slice []string) bool {
 	return false
 }
 
-func (self node) resolveAttrs(scope map[string]interface{}, buf *bytes.Buffer) {
+func (self node) resolveAttrs(scope map[interface{}]interface{}, buf *bytes.Buffer) {
 	attrMap := make(map[string]string)
 
 	// for i := 0; i < self._attrs.Len(); i++ {
@@ -340,7 +340,7 @@ func (self *rangenode) noNewline() bool {
 	return false
 }
 
-func (self *rangenode) resolve(scope map[string]interface{}, buf *bytes.Buffer, curIndent string, indent string, autoclose bool) {
+func (self *rangenode) resolve(scope map[interface{}]interface{}, buf *bytes.Buffer, curIndent string, indent string, autoclose bool) {
 	//oldlhs1, oklhs1 := scope[self._lhs1]
 	//oldlhs2, oklhs2 := scope[self._lhs2]
 
@@ -489,7 +489,7 @@ func (self *declassnode) noNewline() bool {
 	return false
 }
 
-func (self *declassnode) resolve(scope map[string]interface{}, buf *bytes.Buffer, curIndent string, indent string, autoclose bool) {
+func (self *declassnode) resolve(scope map[interface{}]interface{}, buf *bytes.Buffer, curIndent string, indent string, autoclose bool) {
 	scope[self._lhs] = self._rhs
 }
 
@@ -537,7 +537,7 @@ func (self *vdeclassnode) noNewline() bool {
 	return false
 }
 
-func (self *vdeclassnode) resolve(scope map[string]interface{}, buf *bytes.Buffer, curIndent string, indent string, autoclose bool) {
+func (self *vdeclassnode) resolve(scope map[interface{}]interface{}, buf *bytes.Buffer, curIndent string, indent string, autoclose bool) {
 	scope[self._lhs] = self._rhs.resolve(scope)
 }
 
