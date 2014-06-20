@@ -24,7 +24,7 @@ type httpHamlHandler struct {
 	loader Loader
 }
 
-var defaultScope map[string]interface{}
+var defaultScope map[interface{}]interface{}
 
 func adjustSuffix(path string) string {
 	const htmlExt = ".html"
